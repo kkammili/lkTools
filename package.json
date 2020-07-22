@@ -1,0 +1,13 @@
+{
+  "name": "linkedin-tools",
+  "version": "1.0.0",
+  "description": "auto-connect and auto-market",
+  "main": "sendconnect.js",
+  "author": "krishnamraju",
+  "license": "MIT",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "nodemailer": "^6.4.10",
+    "puppeteer": "^5.2.0"
+  }
+}
