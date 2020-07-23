@@ -1,1 +1,1 @@
-web: node nodeCron.js
+worker: node nodeCron.js
