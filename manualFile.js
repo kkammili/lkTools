@@ -1,5 +1,5 @@
 const fs = require('fs')
-fs.writeFile('file.txt', '6', (err) => {
+fs.writeFile('file.txt', '1', (err) => {
     if(err) {
         throw err;
     }
