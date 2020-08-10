@@ -19,18 +19,16 @@ const puppeteer = require('puppeteer');
     await page.type('input#google-location-search', 'Dallas, TX, USA')
     await page.waitFor('button#submitSearch-button')
     await page.click('button#submitSearch-button')
-    await page.waitFor(4000)
-    var jobPostings = await page.$$('h5>a')
-    for(let i=0; i<jobPostings; i++){
+    await page.waitFor('a.card-title-link')
+    const jobPostings = await page.$$('a.card-title-link')
+    for(let i=0; i<jobPostings.length; i++){
         let currentJob = await jobPostings[i]
-        console.log(currentJob, '<----hmmm')
         currentJob.click()
-        await page.waitFor('applybtn-2')
-        let button = await page.$('applybtn-2')
+        await page.waitFor('button#applybtn-2')
+        let button = await page.$('button#applybtn-2')
         let buttonText = await page.evaluate(element => element.textContent, button);
-        console.log(buttonText, '<---- button text here')
         if(buttonText && buttonText.trim().toLowerCase() === 'apply now'){
-            await page.click('applybtn-2')
+            await page.click('button#applybtn-2')
             await page.waitFor('span.bfh-selectbox-option')
             await page.click('span.bfh-selectbox-option')
             await page.waitFor('ul#resume-select-options')
@@ -38,6 +36,7 @@ const puppeteer = require('puppeteer');
             await page.waitFor('button#submit-job-btn')
             await page.click('button#submit-job-btn')
         }
+        await page.goBack()
     }
 
 })()
