@@ -11,69 +11,54 @@ const puppeteer = require('puppeteer');
     await page.setViewport({width: 1600, height: 1080});
     await page.evaluate(() => navigator.userAgent);
     await page.goto('https://www.dice.com/dashboard/login');
-    await page.type('input#email', '')
-    await page.type('input#password', '')
+    await page.type('input#email', 'kkrajus777@gmail.com')
+    await page.type('input#password', 'Kkraju**7')
     await page.click('button[type="submit"]')
 
     let currPage = 1
     let jobApplied = 0
     const reapply = async () =>{
-        await page.goto(`https://www.dice.com/jobs?q=react.js&location=Dallas,%20TX,%20USA&latitude=32.7766642&longitude=-96.79698789999999&countryCode=US&locationPrecision=City&adminDistrictCode=TX&radius=30&radiusUnit=mi&page=${currPage}&pageSize=20&filters.postedDate=ONE&language=en`)
-        const jobs = await page.evaluate(
+        await page.goto(`https://www.dice.com/jobs?q=react.js&countryCode=US&radius=30&radiusUnit=mi&page=${currPage}&pageSize=20&filters.employmentType=CONTRACTS&filters.isRemote=true&language=en&eid=S2Q_,gKQ_`)
+        await page.waitFor(5000)
+
+        // jobs on current page
+        const jobsOnCurrPage = await page.evaluate(
             () => Array.from(
                 document.querySelectorAll('a.card-title-link'),
                 a => a.getAttribute('href')
             )
         )
 
-        for(let j=0; j<jobs.length; j++){
-            let page2 = await browser.newPage()
-            await page2.setViewport({width: 1600, height: 1080});
-            await page2.goto(jobs[j])
-            console.log(`currently applying ${j} of ${jobs.length}`)
+        //visiting job link page in loop
+        for(let j=0; j<jobsOnCurrPage.length; j++){
             try{
-                await page2.waitFor('button#applybtn-2')
-                let button = await page2.$('button#applybtn-2')
-                let buttonText = await page2.evaluate(element => element.textContent, button);
-                if(buttonText && buttonText.trim().toLowerCase() === 'apply now'){
-                    await page2.waitFor('button[id="applybtn-2"]')
-                    await page2.click('button[id="applybtn-2"]')
-                    await page2.waitFor('#resume-select-group')
-                    await page2.waitFor(1000)
-                    await page2.click('#resume-select-group')
-                    await page2.waitFor('ul#resume-select-options')
-                    await page2.click('ul#resume-select-options>li>a')
-                    await page2.waitFor(1000)
+                let page2 = await browser.newPage()
+                await page2.setViewport({width: 1800, height: 1080});
+                await page2.goto(jobsOnCurrPage[j])
 
-                    let encounteredCaptcha = await page2.$('#googleCaptchaSection_NEW_EA_ID')
-                    if(encounteredCaptcha){
-                        await page2.waitFor(3000)
-                        await page2.click('.recaptcha-checkbox-border')
-                        await page2.waitFor(3000)
-                    }
-                    // id="googleCaptchaSection_NEW_EA_ID"
-                    await page2.waitFor('button#submit-job-btn')
-                    await page2.click('button#submit-job-btn')
-                    jobApplied = jobApplied + 1
-                }
-                console.log('Total number of jobs applied:', jobApplied)
+
+                //pulling apply button
+                const applyNowButton = (await page2.$x("/html/body/div[3]/div[5]/div[2]/div[2]/div/div[2]/div[1]/dhi-wc-apply-button"))[0]
+                await applyNowButton.click()
+
+                const nextButton = await page2.waitFor('#app > div > span > div > div.step-one > div.navigation-buttons > button.btn.btn-primary.btn-next.btn-block')
+                await nextButton.click()
+
+                const applyButton = await page2.waitFor('#app > div > span > div > div.step-four > div.navigation-buttons > button.btn.btn-primary.btn-next.btn-split')
+                await applyButton.click()
+
+                console.log(`currently applying ${j} of ${jobsOnCurrPage.length} on page ${currPage}`)
                 await page2.close()
+
             }catch(e){
-                await page2.close()
+                console.log('errored out', e)
             }
         }
+
         currPage = currPage + 1
-      await reapply()
+        await reapply()
+
     }
     await reapply()
 
 })()
-
-
-// await page.waitFor('#searchInput-div > form > div > div.flex-grow-1.mr-md-2 > div > dhi-new-typeahead-input > div > input')
-// await page.type('#searchInput-div > form > div > div.flex-grow-1.mr-md-2 > div > dhi-new-typeahead-input > div > input', 'React.js')
-// await page.waitFor('input#google-location-search')
-// await page.type('input#google-location-search', 'Dallas, TX, USA')
-// await page.waitFor('button#submitSearch-button')
-// await page.click('button#submitSearch-button')
-// await page.waitFor('a.card-title-link')
