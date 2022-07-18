@@ -4,12 +4,12 @@ const puppeteer = require('puppeteer');
 (async()=> {
     const browser = await puppeteer.launch({
         headless: false, slowMo: 100,
-        args: ['--start-fullscreen']
+        defaultViewport:null,
+        args: ['--start-fullscreen', '--start-maximized']
     });
     const page = await browser.newPage();
-    await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36');
-    await page.setViewport({width: 1600, height: 1080});
-    await page.evaluate(() => navigator.userAgent);
+    await page.setDefaultNavigationTimeout(60000);
+    await page.setDefaultTimeout(45000);
     await page.goto('https://www.dice.com/dashboard/login');
     await page.type('input#email', 'kkrajus777@gmail.com')
     await page.type('input#password', 'Kkraju**7')
@@ -18,7 +18,7 @@ const puppeteer = require('puppeteer');
     let currPage = 1
     let jobApplied = 0
     const reapply = async () =>{
-        await page.goto(`https://www.dice.com/jobs?q=node js&countryCode=US&radius=30&radiusUnit=mi&page=${currPage}&pageSize=20&filters.employmentType=CONTRACTS&filters.isRemote=true&language=en&eid=S2Q_,gKQ_`)
+        await page.goto(`https://www.dice.com/jobs?q=node js&countryCode=US&radius=30&radiusUnit=mi&page=${currPage}&pageSize=20&filters.employmentType=CONTRACTS&pageSize=20&filters.postedDate=ONE&filters.easyApply=true&filters.isRemote=true&language=en&eid=S2Q_,gKQ_`)
         await page.waitFor(5000)
 
         // jobs on current page
